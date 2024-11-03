@@ -136,15 +136,15 @@ impl UniswapV3PoolSdk {
     }
 
     pub fn one_line_info(&self) -> Result<()> {
-        let fee_num: usize = self.pool.fee as usize;
-        let fee_num = fee_num as f32;
-        let fee_num = fee_num / 10000.0;
+        let fee_num = crate::pool_calcs::fee_to_float(self.pool.fee);
+        let rate = crate::pool_calcs::tick_to_exchange_rate(self.pool.tick_current, 18, 18)?;
         println!(
-            "{:<4}%  {}  {:<25}  TODO       {}",
+            "{:<4}%  {}  {:<25}  {:<12}  {}",
             fee_num,
             self.pool.address(None, None),
             self.pool.liquidity,
-            self.pool.tick_current
+            self.pool.tick_current,
+            rate,
         );
         Ok(())
     }

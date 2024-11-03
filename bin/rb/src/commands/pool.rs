@@ -7,6 +7,7 @@ use lib::prelude::*;
 use tokens::erc20::Erc20;
 use tokens::erc20_constants;
 use uniswap_v3_sdk::prelude::FeeAmount;
+use uniswapv3pool::pool_calcs::fee_to_float;
 use uniswapv3pool::pool_constants;
 use uniswapv3pool::univ3contract::UniswapV3PoolContract;
 use uniswapv3pool::univ3sdk::UniswapV3PoolSdk;
@@ -159,7 +160,7 @@ pub async fn pool_list(args: ListArgs, provider: RootProvider) -> Result<()> {
         FeeAmount::HIGH,
     ];
 
-    println!("Fee    Pool Address                                Liquidity                  Rate       Current Tick");
+    println!("Fee    Pool Address                                Liquidity                  Current Tick  Rate");
     for fee in fees {
         match UniswapV3PoolSdk::from_pool_key(
             id,
@@ -176,9 +177,11 @@ pub async fn pool_list(args: ListArgs, provider: RootProvider) -> Result<()> {
                 pool.one_line_info().ok();
             }
             Err(_error) => {
-                let fee_num: usize = *fee as usize;
-                let fee_num = fee_num as f32;
-                let fee_num = fee_num / 10000.0;
+                let fee_num = fee_to_float(*fee);
+
+                // let fee_num: usize = *fee as usize;
+                // let fee_num = fee_num as f32;
+                // let fee_num = fee_num / 10000.0;
                 println!("{:<4}%  No liquidity pool", fee_num);
             }
         };
